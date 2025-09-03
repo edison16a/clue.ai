@@ -5,18 +5,40 @@ import { useRef, useState } from "react";
 
 export default function Page() {
   const [code, setCode] = useState<string>("");
-  const [imageName, setImageName] = useState<string>("");
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageName, setImageName] = useState<string>("");                // kept
+  const [imagePreview, setImagePreview] = useState<string | null>(null); // kept (legacy single)
   const [aiText, setAiText] = useState<string>("");
+  const [ask, setAsk] = useState<string>("");                            // NEW: optional prompt text
+  const [images, setImages] = useState<Array<{ name: string; src: string }>>([]); // NEW: multi
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // NEW: util to add multiple files
+  const addFiles = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    // for "File uploaded" label logic
+    setImageName(files[0].name);
+
+    Array.from(files).forEach((file, idx) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const src = reader.result as string;
+        setImages((prev) => [...prev, { name: file.name, src }]);
+
+        // keep your legacy single-preview working (first file only)
+        if (idx === 0 && !imagePreview) setImagePreview(src);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
 
   const onDrop = (e: React.DragEvent<HTMLLabelElement>) => {
     e.preventDefault();
-    const file = e.dataTransfer.files?.[0];
-    if (file) handleImage(file);
+    addFiles(e.dataTransfer.files); // NEW
   };
 
   const handleImage = (file: File) => {
+    // kept for compatibility (used by your original code paths)
     setImageName(file.name);
     const reader = new FileReader();
     reader.onload = () => setImagePreview(reader.result as string);
@@ -24,18 +46,36 @@ export default function Page() {
   };
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) handleImage(file);
+    // UPDATED: accept multiple files
+    const files = e.target.files;
+    addFiles(files); // NEW
+  };
+
+  const removeImage = (index: number) => {
+    setImages((prev) => {
+      const next = prev.filter((_, i) => i !== index);
+      // keep legacy single-preview in sync
+      if (index === 0) {
+        setImagePreview(next[0]?.src ?? null);
+        setImageName(next[0]?.name ?? "");
+      }
+      return next;
+    });
   };
 
   const onStart = () => {
     // Demo behavior: craft a gentle, non-solution “coaching” style response
     const hasCode = code.trim().length > 0;
-    const hasImg = !!imagePreview;
+    const hasImg = images.length > 0 || !!imagePreview;
+    const hasAsk = ask.trim().length > 0;
 
     const intro =
       "Here’s how I’d help without giving the answer directly—let’s debug like a pro:";
     const steps: string[] = [];
+
+    if (hasAsk) {
+      steps.push(`User context: ${ask}`);
+    }
 
     if (hasCode) {
       steps.push(
@@ -103,9 +143,24 @@ export default function Page() {
             />
           </div>
 
-          <div className="uploadRow">
+          {/* NEW: Optional guidance input */}
+          <div className="fieldGroup">
+            <label htmlFor="ask" className="label">
+              How can I help you (Optional)
+            </label>
+            <input
+              id="ask"
+              type="text"
+              className="askInput"
+              placeholder="Describe the bug, the goal, or what confuses you…"
+              value={ask}
+              onChange={(e) => setAsk(e.target.value)}
+            />
+          </div>
+
+          <div className={`uploadRow ${images.length ? "hasGallery" : ""}`}>
             <label
-              className="dropzone"
+              className={`dropzone ${imageName ? "hasFile" : ""}`}
               onDragOver={(e) => e.preventDefault()}
               onDrop={onDrop}
               tabIndex={0}
@@ -116,6 +171,7 @@ export default function Page() {
               <input
                 ref={fileInputRef}
                 type="file"
+                multiple                                          // NEW
                 accept="image/*"
                 className="hiddenFile"
                 onChange={onFileChange}
@@ -132,12 +188,34 @@ export default function Page() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <span>Drag & drop or click to upload</span>
+                <span className="dzText">Drag & drop or click to upload</span>
+                {imageName && <span className="dzTextUploaded">File uploaded</span>}
                 {imageName && <em className="fileNote">Selected: {imageName}</em>}
               </div>
             </label>
 
-            {/* NEW: Help button placed to the right of upload area */}
+            {/* NEW: Previews container with removable thumbs */}
+            {images.length > 0 && (
+              <div className="thumbs" aria-label="Uploaded previews">
+                {images.map((img, i) => (
+                  <div className="thumbItem" key={`${img.name}-${i}`}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={img.src} alt={`Uploaded ${img.name}`} />
+                    <button
+                      type="button"
+                      className="thumbClose"
+                      aria-label={`Remove ${img.name}`}
+                      title="Remove"
+                      onClick={() => removeImage(i)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* existing Help button; stays third in order */}
             <button
               type="button"
               className="helpBtn"
@@ -158,11 +236,10 @@ export default function Page() {
               </svg>
               <span>Help Debug</span>
             </button>
-            {/* END NEW */}
 
+            {/* legacy single preview block (kept). Hidden via CSS when gallery present */}
             {imagePreview && (
               <div className="thumb">
-                {/* decorative preview */}
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={imagePreview} alt="Uploaded preview" />
               </div>
