@@ -67,13 +67,27 @@ export default function Page() {
   // REMOVED: onStart (no longer used)
 
   // UPDATED: Help button -> start loading bar (no fake text)
-  const onHelp = () => {
-    // clear any previous text and show loader until your real response arrives
+  const onHelp = async () => {
+  try {
     setAiText("");
     setIsLoading(true);
-    // When you implement the backend, call setIsLoading(false) and setAiText(response)
-    // in your response handler.
-  };
+
+    const res = await fetch("/api/help", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code, ask, images }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data?.error || "Request failed");
+
+    setAiText(data.aiText ?? "");
+  } catch (e: any) {
+    setAiText(`Oops — ${e.message || "something went wrong."}`);
+  } finally {
+    setIsLoading(false);
+  }
+};
   // END UPDATED
 
   return (
