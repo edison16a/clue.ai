@@ -88,6 +88,8 @@ body.root {
   color: transparent;
 }
 
+
+
 .tagline {
   max-width: 740px;
   margin: 12px auto 20px;
@@ -279,12 +281,45 @@ body.root {
   overflow: hidden;
 }
 
+/* Make the AI text container tight and readable */
 .aiText {
-  white-space: pre-wrap;
+  /* remove any default top/bottom gap from the container itself */
+  margin: 0;                         /* ✅ kill container margin */
   font-family: var(--font-system);
   font-size: 14.5px;
   line-height: 1.7;
 }
+
+/* Remove the “mystery” top space that often comes from the first child’s margin */
+.aiText > :first-child {             /* ✅ prevents first paragraph’s top margin from creating a gap */
+  margin-top: 0 !important;
+}
+
+/* Nice defaults for markdown elements */
+.aiText p { margin: 0.5em 0; }
+.aiText ul, .aiText ol { margin: 0.5em 0 0.5em 1.25em; }
+.aiText code {
+  font-family: var(--font-mono);
+  font-size: 0.95em;
+  background: rgba(0,0,0,.22);
+  border: 1px solid rgba(255,255,255,.08);
+  padding: 0.1em 0.35em;
+  border-radius: 6px;
+}
+.aiText pre {
+  margin: 0.75em 0;                  /* tighter than browser default */
+  padding: 10px 12px;
+  background: rgba(0,0,0,.22);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: var(--radius-md);
+  overflow: auto;
+}
+.aiText pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+
 
 .placeholder {
   color: rgb(var(--muted));
