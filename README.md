@@ -39,7 +39,8 @@ Clue.ai bridges the gap. It gives you **just enough help to keep learning** whil
 
 ## 🚀 Screenshots
 
-<img width="1512" height="820" alt="Screenshot 2025-09-03 at 4 26 41 PM" src="https://github.com/user-attachments/assets/7869d6d3-9c51-4c5d-88b9-37bcb4713961" />
+<img width="1203" height="719" alt="Screenshot 2025-09-03 at 4 27 42 PM" src="https://github.com/user-attachments/assets/5d9b1e52-01af-4158-a882-01522102b602" />
+
 
 ---
 
