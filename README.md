@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Clue.ai 🎓💡
 
-## Getting Started
+[https://clue-ai.vercel.app/](https://clue-ai.vercel.app/)
 
-First, run the development server:
+Clue.ai is an AI-powered learning assistant built to help students debug their code and troubleshoot lab assignments — **without ever spoiling the answer**.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Think of it as that supportive teacher who nudges you in the right direction, asks good questions, and helps you figure things out on your own. Instead of dumping a solution, Clue.ai guides you step-by-step so you actually learn the reasoning process.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ✨ What it does
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+* 📄 **Paste your code** — share any snippet you’re stuck on.
+* 🖼️ **Upload images/screenshots** — error messages, lab prompts, or assignment screenshots.
+* 💬 **Describe your problem** — tell Clue.ai what confuses you, or just say “Help Debug.”
+* 🤖 **Get coaching, not answers** — the AI responds with hints, clarifying questions, and problem-solving strategies.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🎯 Why it matters
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Too often, students either:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+* get stuck and give up, or
+* find full solutions online without understanding them.
 
-## Deploy on Vercel
+Clue.ai bridges the gap. It gives you **just enough help to keep learning** while protecting the discovery process. The focus is on **critical thinking, debugging skills, and conceptual understanding** — not copy-pasting answers.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🛠️ Tech stack
+
+* **Next.js 15** (React 19, TypeScript)
+* **TailwindCSS 4** for styling
+* **OpenAI GPT-4o** for AI responses
+* Hosted on **Vercel**
+
+---
+
+## 🚀 Screenshots
+
+<img width="1512" height="820" alt="Screenshot 2025-09-03 at 4 26 41 PM" src="https://github.com/user-attachments/assets/7869d6d3-9c51-4c5d-88b9-37bcb4713961" />
+
+---
+
+
