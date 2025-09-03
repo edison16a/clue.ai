@@ -10,6 +10,7 @@ export default function Page() {
   const [aiText, setAiText] = useState<string>("");
   const [ask, setAsk] = useState<string>("");                            // NEW: optional prompt text
   const [images, setImages] = useState<Array<{ name: string; src: string }>>([]); // NEW: multi
+  const [isLoading, setIsLoading] = useState<boolean>(false);            // NEW: loading bar state
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // NEW: util to add multiple files
@@ -63,68 +64,27 @@ export default function Page() {
     });
   };
 
-  const onStart = () => {
-    // Demo behavior: craft a gentle, non-solution “coaching” style response
-    const hasCode = code.trim().length > 0;
-    const hasImg = images.length > 0 || !!imagePreview;
-    const hasAsk = ask.trim().length > 0;
+  // REMOVED: onStart (no longer used)
 
-    const intro =
-      "Here’s how I’d help without giving the answer directly—let’s debug like a pro:";
-    const steps: string[] = [];
-
-    if (hasAsk) {
-      steps.push(`User context: ${ask}`);
-    }
-
-    if (hasCode) {
-      steps.push(
-        "1) Identify the exact input → output you expect; add a tiny test case you can run.",
-        "2) Locate the smallest function or block that could be failing; comment out unrelated parts.",
-        "3) Add one print/log to confirm assumptions about variables and branches.",
-        "4) Check edge cases (empty arrays/strings, off-by-one indexes, null/undefined).",
-        "5) Re-read error messages; they almost always point to the line/class/module that matters."
-      );
-    } else {
-      steps.push(
-        "Paste a minimal code snippet or upload a lab screenshot so we can zoom into the exact step."
-      );
-    }
-
-    if (hasImg) {
-      steps.push(
-        "From the image, focus on the prompt’s constraints (input types, bounds). Translate those into tests."
-      );
-    }
-
-    setAiText([intro, "", ...steps].join("\n"));
-  };
-
-  // NEW: Help button handler (non-spoiler tips)
+  // UPDATED: Help button -> start loading bar (no fake text)
   const onHelp = () => {
-    const help = [
-      "Quick tips (no spoilers):",
-      "• If there’s an error line number, read 3 lines above and below it.",
-      "• Add one print/log to show key variable values before the failing line.",
-      "• Check off-by-one: indexes, loop bounds, and <= vs <.",
-      "• Confirm types/shape: string vs number, undefined/null, empty arrays.",
-      "• Reproduce with the tiniest input that still fails.",
-    ].join("\n");
-    setAiText(help);
+    // clear any previous text and show loader until your real response arrives
+    setAiText("");
+    setIsLoading(true);
+    // When you implement the backend, call setIsLoading(false) and setAiText(response)
+    // in your response handler.
   };
-  // END NEW
+  // END UPDATED
 
   return (
     <main className="container">
       <header className="hero">
         <h1 className="brand">Clue.ai</h1>
         <p className="tagline">
-          An AI Agent that helps students troubleshoot code or coding labs (and CodingBat!)—without
+          An AI Agent that helps students troubleshoot code or coding labs—without
           directly giving the answer.
         </p>
-        <button className="startBtn" onClick={onStart} aria-label="Start troubleshooting">
-          Start
-        </button>
+        {/* REMOVED Start button */}
       </header>
 
       <section className="panel">
@@ -136,7 +96,7 @@ export default function Page() {
             <textarea
               id="code"
               className="codebox"
-              placeholder={`// Paste your Java, Python, JS, etc.\n// Keep it minimal (MCVE).`}
+              placeholder={`// Paste your Java, Python, JS, etc.\n// Attatch pictures if needed.`}
               spellCheck={false}
               value={code}
               onChange={(e) => setCode(e.target.value)}
@@ -215,13 +175,15 @@ export default function Page() {
               </div>
             )}
 
-            {/* existing Help button; stays third in order */}
+            {/* Help button drives loading */}
             <button
               type="button"
               className="helpBtn"
               onClick={onHelp}
               aria-label="Get non-spoiler debugging help"
               title="Non-spoiler debugging help"
+              aria-busy={isLoading}
+              disabled={isLoading}
             >
               {/* Search icon */}
               <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
@@ -234,7 +196,7 @@ export default function Page() {
                   strokeLinejoin="round"
                 />
               </svg>
-              <span>Help Debug</span>
+              <span>{isLoading ? "Thinking…" : "Help Debug"}</span>
             </button>
 
             {/* legacy single preview block (kept). Hidden via CSS when gallery present */}
@@ -253,13 +215,21 @@ export default function Page() {
             <h2>AI Response</h2>
           </div>
           <div className="aiCard" role="region" aria-live="polite">
-            {aiText ? (
+            {isLoading ? (
+              /* NEW: fancy indefinite loading bar */
+              <div className="loaderWrap">
+                <div className="loaderTrack">
+                  <div className="loaderBar" />
+                </div>
+                <p className="loaderHint">Generating guidance…</p>
+              </div>
+            ) : aiText ? (
               <pre className="aiText">{aiText}</pre>
             ) : (
               <div className="placeholder">
                 <p>
-                  Hit <strong>Start</strong> to get coaching steps that point you in the right
-                  direction—without spoiling the solution.
+                  Press <strong>Help Debug</strong> to start. I’ll analyze your code, images, and
+                  context and return coaching-only steps (no spoilers).
                 </p>
                 <ul>
                   <li>Upload a screenshot of your prompt/error</li>
