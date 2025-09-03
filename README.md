@@ -17,26 +17,6 @@ Think of it as that supportive teacher who nudges you in the right direction, as
 
 ---
 
-## 🎯 Why it matters
-
-Too often, students either:
-
-* get stuck and give up, or
-* find full solutions online without understanding them.
-
-Clue.ai bridges the gap. It gives you **just enough help to keep learning** while protecting the discovery process. The focus is on **critical thinking, debugging skills, and conceptual understanding** — not copy-pasting answers.
-
----
-
-## 🛠️ Tech stack
-
-* **Next.js 15** (React 19, TypeScript)
-* **TailwindCSS 4** for styling
-* **OpenAI GPT-4o** for AI responses
-* Hosted on **Vercel**
-
----
-
 ## 🚀 Screenshots
 
 <img width="1203" height="719" alt="Screenshot 2025-09-03 at 4 27 42 PM" src="https://github.com/user-attachments/assets/5d9b1e52-01af-4158-a882-01522102b602" />
