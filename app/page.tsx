@@ -1,103 +1,168 @@
-import Image from "next/image";
+// app/page.tsx
+"use client";
 
-export default function Home() {
+import { useRef, useState } from "react";
+
+export default function Page() {
+  const [code, setCode] = useState<string>("");
+  const [imageName, setImageName] = useState<string>("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [aiText, setAiText] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const onDrop = (e: React.DragEvent<HTMLLabelElement>) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) handleImage(file);
+  };
+
+  const handleImage = (file: File) => {
+    setImageName(file.name);
+    const reader = new FileReader();
+    reader.onload = () => setImagePreview(reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) handleImage(file);
+  };
+
+  const onStart = () => {
+    // Demo behavior: craft a gentle, non-solution “coaching” style response
+    const hasCode = code.trim().length > 0;
+    const hasImg = !!imagePreview;
+
+    const intro =
+      "Here’s how I’d help without giving the answer directly—let’s debug like a pro:";
+    const steps: string[] = [];
+
+    if (hasCode) {
+      steps.push(
+        "1) Identify the exact input → output you expect; add a tiny test case you can run.",
+        "2) Locate the smallest function or block that could be failing; comment out unrelated parts.",
+        "3) Add one print/log to confirm assumptions about variables and branches.",
+        "4) Check edge cases (empty arrays/strings, off-by-one indexes, null/undefined).",
+        "5) Re-read error messages; they almost always point to the line/class/module that matters."
+      );
+    } else {
+      steps.push(
+        "Paste a minimal code snippet or upload a lab screenshot so we can zoom into the exact step."
+      );
+    }
+
+    if (hasImg) {
+      steps.push(
+        "From the image, focus on the prompt’s constraints (input types, bounds). Translate those into tests."
+      );
+    }
+
+    setAiText([intro, "", ...steps].join("\n"));
+  };
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+    <main className="container">
+      <header className="hero">
+        <h1 className="brand">Clue.ai</h1>
+        <p className="tagline">
+          An AI Agent that helps students troubleshoot code or coding labs (and CodingBat!)—without
+          directly giving the answer.
+        </p>
+        <button className="startBtn" onClick={onStart} aria-label="Start troubleshooting">
+          Start
+        </button>
+      </header>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
+      <section className="panel">
+        <div className="left">
+          <div className="fieldGroup">
+            <label htmlFor="code" className="label">
+              Paste your code
+            </label>
+            <textarea
+              id="code"
+              className="codebox"
+              placeholder={`// Paste your Java, Python, JS, etc.\n// Keep it minimal (MCVE).`}
+              spellCheck={false}
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
             />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          </div>
+
+          <div className="uploadRow">
+            <label
+              className="dropzone"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={onDrop}
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") fileInputRef.current?.click();
+              }}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hiddenFile"
+                onChange={onFileChange}
+                aria-label="Upload image of your assignment or error"
+              />
+              <div className="dzInner">
+                <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M12 16V8m0 0l-3 3m3-3l3 3M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                <span>Drag & drop or click to upload</span>
+                {imageName && <em className="fileNote">Selected: {imageName}</em>}
+              </div>
+            </label>
+
+            {imagePreview && (
+              <div className="thumb">
+                {/* decorative preview */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={imagePreview} alt="Uploaded preview" />
+              </div>
+            )}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+        <div className="right">
+          <div className="aiHeader">
+            <span className="pulse" aria-hidden="true" />
+            <h2>AI Response</h2>
+          </div>
+          <div className="aiCard" role="region" aria-live="polite">
+            {aiText ? (
+              <pre className="aiText">{aiText}</pre>
+            ) : (
+              <div className="placeholder">
+                <p>
+                  Hit <strong>Start</strong> to get coaching steps that point you in the right
+                  direction—without spoiling the solution.
+                </p>
+                <ul>
+                  <li>Upload a screenshot of your prompt/error</li>
+                  <li>Paste a minimal code snippet</li>
+                  <li>Describe what you expected vs. what happened</li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <footer className="foot">
+        <p>
+          Built for students • Edison Law 2025 • Monte Vista High School • v1.2.7
+        </p>
       </footer>
-    </div>
+    </main>
   );
 }
