@@ -60,6 +60,20 @@ export default function Page() {
     setAiText([intro, "", ...steps].join("\n"));
   };
 
+  // NEW: Help button handler (non-spoiler tips)
+  const onHelp = () => {
+    const help = [
+      "Quick tips (no spoilers):",
+      "• If there’s an error line number, read 3 lines above and below it.",
+      "• Add one print/log to show key variable values before the failing line.",
+      "• Check off-by-one: indexes, loop bounds, and <= vs <.",
+      "• Confirm types/shape: string vs number, undefined/null, empty arrays.",
+      "• Reproduce with the tiniest input that still fails.",
+    ].join("\n");
+    setAiText(help);
+  };
+  // END NEW
+
   return (
     <main className="container">
       <header className="hero">
@@ -122,6 +136,29 @@ export default function Page() {
                 {imageName && <em className="fileNote">Selected: {imageName}</em>}
               </div>
             </label>
+
+            {/* NEW: Help button placed to the right of upload area */}
+            <button
+              type="button"
+              className="helpBtn"
+              onClick={onHelp}
+              aria-label="Get non-spoiler debugging help"
+              title="Non-spoiler debugging help"
+            >
+              {/* Search icon */}
+              <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>Help Debug</span>
+            </button>
+            {/* END NEW */}
 
             {imagePreview && (
               <div className="thumb">

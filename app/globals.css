@@ -291,3 +291,46 @@ body.root {
   margin-top: 26px;
   font-size: 13px;
 }
+
+/* --- Help button layout next to upload --- */
+.uploadRow {
+  grid-template-columns: 1fr auto 140px; /* was: 1fr 140px */
+}
+
+/* Help button */
+.helpBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255,255,255,.12);
+  background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,.28));
+  color: rgb(var(--fg));
+  font-weight: 700;
+  letter-spacing: .2px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: transform .08s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+  white-space: nowrap;
+}
+.helpBtn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(144,97,255,.55);
+  background: linear-gradient(180deg, rgba(144,97,255,.14), rgba(144,97,255,.10));
+  box-shadow: 0 10px 22px rgba(144,97,255,.22);
+}
+.helpBtn:active { transform: translateY(0); }
+.helpBtn svg { opacity: .9; }
+
+/* Stack on small screens */
+@media (max-width: 640px) {
+  .uploadRow {
+    grid-template-columns: 1fr; /* drop to one column */
+  }
+  .helpBtn {
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+  }
+}
