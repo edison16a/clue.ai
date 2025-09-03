@@ -2,6 +2,8 @@
 "use client";
 
 import { useRef, useState } from "react";
+import ReactMarkdown from "react-markdown";    
+import remarkGfm from "remark-gfm";      
 
 export default function Page() {
   const [code, setCode] = useState<string>("");
@@ -81,7 +83,7 @@ export default function Page() {
     const data = await res.json();
     if (!res.ok) throw new Error(data?.error || "Request failed");
 
-    setAiText(data.aiText ?? "");
+    setAiText((data.aiText ?? "").trimStart());
   } catch (e: any) {
     setAiText(`Oops — ${e.message || "something went wrong."}`);
   } finally {
@@ -162,7 +164,7 @@ export default function Page() {
                     strokeLinejoin="round"
                   />
                 </svg>
-                <span className="dzText">Drag & drop or click to upload</span>
+                <span className="dzText">Drag & drop or click to upload images</span>
                 {imageName && <span className="dzTextUploaded">File uploaded</span>}
                 {imageName && <em className="fileNote">Selected: {imageName}</em>}
               </div>
@@ -238,7 +240,11 @@ export default function Page() {
                 <p className="loaderHint">Generating guidance…</p>
               </div>
             ) : aiText ? (
-              <pre className="aiText">{aiText}</pre>
+              <div className="aiText">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {aiText}
+                </ReactMarkdown>
+              </div>
             ) : (
               <div className="placeholder">
                 <p>
