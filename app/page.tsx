@@ -112,7 +112,7 @@ export default function Page() {
             <textarea
               id="code"
               className="codebox"
-              placeholder={`// Paste your Java, Python, JS, etc.\n// Attatch pictures if needed.`}
+              placeholder={`// Paste your Java, Python, JS, etc.\n// Attach pictures if needed.`}
               spellCheck={false}
               value={code}
               onChange={(e) => setCode(e.target.value)}
